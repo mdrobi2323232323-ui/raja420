@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পাবলিক লটারি গেম - ভাগ্য পরীক্ষা</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Hind Siliguri"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #0f172a;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.8); }
+        }
+        .animate-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-float {
+            animation: floatAnim 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 bg-slate-950 text-slate-100">
+
+    <!-- RAJA420 Custom Link / Gateway Screen -->
+    <div id="raja420-gateway" class="w-full max-w-[420px] bg-slate-900 rounded-[2.25rem] shadow-2xl overflow-hidden border-[6px] border-amber-600/70 p-6 flex flex-col justify-center space-y-5 relative z-40">
+        <div class="text-center space-y-2">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-500 mx-auto flex items-center justify-center text-3xl text-slate-950 shadow-lg animate-float">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+            <h1 class="text-xl font-black text-amber-400 tracking-wide">RAJA420 পোর্টাল</h1>
+            <p class="text-xs text-slate-400">গেমে প্রবেশ করতে নিচের লিংক বক্সে <b class="text-amber-300 font-mono">raja420</b> লিখুন</p>
+        </div>
+
+        <!-- Simulated Browser URL / Search Bar -->
+        <div class="bg-slate-950 p-3 rounded-2xl border border-slate-700 space-y-2.5 shadow-inner">
+            <div class="flex items-center gap-2 bg-slate-900 px-3 py-2.5 rounded-xl border border-amber-500/40 focus-within:ring-2 focus-within:ring-amber-500">
+                <i class="fa-solid fa-lock text-emerald-400 text-xs"></i>
+                <span class="text-xs text-slate-500 font-mono select-none">https://</span>
+                <input type="text" id="raja-link-input" value="raja420" placeholder="এখানে raja420 লিখুন..." onkeyup="if(event.key === 'Enter') enterRaja420Portal()" class="flex-1 bg-transparent text-sm font-mono font-bold text-amber-300 focus:outline-none">
+                <span class="text-xs text-slate-500 font-mono select-none">.live</span>
+            </div>
+            <p id="gateway-error" class="hidden text-[11px] text-rose-400 text-center font-semibold">সঠিক কোড বা লিংক (raja420) লিখুন!</p>
+            <button onclick="enterRaja420Portal()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 font-black text-sm shadow-lg active:scale-98 transition">
+                <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> গেমে প্রবেশ করুন (Go)
+            </button>
+        </div>
+
+        <div class="bg-slate-800/60 p-3.5 rounded-2xl border border-slate-700/70 text-[11px] text-slate-300 space-y-1.5">
+            <p class="font-bold text-amber-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-globe"></i> স্থায়ী অনলাইন লিংক বানাতে চান?
+            </p>
+            <p class="text-slate-400 leading-relaxed">
+                এই ফাইলটি ডাউনলোড করে <b class="text-white">Netlify Drop (app.netlify.com/drop)</b>-এ আপলোড করে সাইটের নাম <b class="text-emerald-400 font-mono">raja420</b> দিলে আপনার পার্মানেন্ট লিংক হবে: <span class="text-amber-300 font-mono underline">raja420.netlify.app</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Mobile App Container -->
+    <div id="main-game-app" class="hidden w-full max-w-[420px] bg-slate-900 rounded-[2.25rem] shadow-2xl overflow-hidden border-[6px] border-slate-700 flex flex-col h-[850px] max-h-[94vh] relative">
+        
+        <!-- App Header -->
+        <header class="bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 px-5 pt-4 pb-5 rounded-b-[1.75rem] shadow-lg relative z-10">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white/60 flex items-center justify-center text-lg font-bold shadow-inner">
+                        <i class="fa-solid fa-ticket text-yellow-200"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base font-bold leading-tight text-white">পাবলিক লটারি ড্র</h1>
+                        <p class="text-[11px] text-yellow-100 font-medium font-mono">raja420.live • রাজা৪২০</p>
+                    </div>
+                </div>
+                <button onclick="openDepositWallet()" class="flex items-center gap-1.5 bg-black/40 hover:bg-black/60 px-3.5 py-2 rounded-full border border-yellow-400/50 transition cursor-pointer shadow-md active:scale-95">
+                    <i class="fa-solid fa-wallet text-yellow-400 text-xs"></i>
+                    <span class="text-xs font-extrabold text-yellow-200 tracking-wide">ডিপোজিট</span>
+                </button>
+            </div>
+
+            <!-- Active Jackpot Banner -->
+            <div class="bg-black/25 backdrop-blur-xs rounded-xl p-3 border border-yellow-400/30 flex items-center justify-between">
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[10px] uppercase tracking-wider bg-yellow-500 text-slate-950 px-2 py-0.5 rounded font-extrabold">মেগা জ্যাকপট</span>
+                        <span class="flex items-center gap-1 text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded-full font-bold animate-pulse">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white"></span> LIVE
+                        </span>
+                    </div>
+                    <h2 class="text-lg font-black text-yellow-300 mt-0.5">৳ ১,০০,০০০</h2>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-slate-300">পরবর্তী লাইভ ড্র:</p>
+                    <p id="draw-timer" class="text-sm font-black text-yellow-200 font-mono">০০:৩০</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Main Content -->
+        <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-4 pb-6 space-y-4">
+            
+            <!-- Tab Navigation Buttons inside App -->
+            <div class="grid grid-cols-7 gap-1 bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700">
+                <button onclick="switchTab('buy')" id="tab-buy" class="py-2 rounded-xl text-[10px] font-bold transition flex flex-col items-center justify-center gap-0.5 bg-amber-600 text-white shadow-md">
+                    <i class="fa-solid fa-cart-shopping text-xs"></i> টিকিট
+                </button>
+                <button onclick="switchTab('draw')" id="tab-draw" class="py-2 rounded-xl text-[10px] font-bold transition flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-white relative">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 absolute top-1.5 right-2 animate-ping"></span>
+                    <i class="fa-solid fa-tower-broadcast text-xs"></i> লাইভ ড্র
+                </button>
+                <button onclick="switchTab('spin')" id="tab-spin" class="py-2 rounded-xl text-[10px] font-bold transition flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-dharmachakra text-xs"></i> স্পিন
+                </button>
+                <button onclick="switchTab('jili')" id="tab-jili" class="py-2 rounded-xl text-[10px] font-bold transition flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-gem text-xs"></i> জিলি
+                </button>
+                <button onclick="switchTab('dice')" id="tab-dice" class="py-2 rounded-xl text-[10px] font-bold transition flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-dice text-xs"></i> ছক্কা
+                </button>
+                <button onclick="switchTab('coin')" id="tab-coin" class="py-2 rounded-xl text-[10px] font-bold transition flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-coins text-xs"></i> কয়েন
+                </button>
+                <button onclick="switchTab('my-tickets')" id="tab-my-tickets" class="py-2 rounded-xl text-[10px] font-bold transition flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-wallet text-xs"></i> ওয়ালেট
+                </button>
+            </div>
+
+            <!-- SECTION 1: BUY TICKETS -->
+            <div id="view-buy" class="space-y-3.5">
+                <div class="bg-slate-800/90 p-4 rounded-2xl border border-slate-700 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-ticket-simple text-amber-400"></i> নতুন লটারি টিকিট কিনুন
+                        </h3>
+                        <span class="text-xs text-amber-400 font-bold">মূল্য: ৳ ২০ / টিকিট</span>
+                    </div>
+
+                    <!-- Ticket Number Selection Mode -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300">টিকিট নম্বর (৪ অংক):</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="custom-ticket-num" maxlength="4" placeholder="যেমন: ৭৪৭৭" class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 text-center text-lg font-mono tracking-widest font-bold text-amber-300">
+                            <button onclick="generateRandomNumber()" class="px-3.5 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs font-bold text-slate-200 transition" title="র্যান্ডম নম্বর">
+                                <i class="fa-solid fa-dice"></i> র্যান্ডম
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quantity selector -->
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-xs text-slate-400">পরিমাণ:</span>
+                        <div class="flex items-center gap-3">
+                            <button onclick="adjustQty(-1)" class="w-8 h-8 rounded-lg bg-slate-700 hover:bg-slate-600 font-bold">-</button>
+                            <span id="ticket-qty" class="text-sm font-bold text-amber-300">১</span>
+                            <button onclick="adjustQty(1)" class="w-8 h-8 rounded-lg bg-slate-700 hover:bg-slate-600 font-bold">+</button>
+                        </div>
+                    </div>
+
+                    <p id="buy-error" class="hidden text-xs text-rose-400 font-semibold bg-rose-950/50 p-2 rounded-lg border border-rose-800/50"></p>
+
+                    <button onclick="buyTicket()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 font-black text-sm shadow-lg active:scale-98 transition">
+                        <i class="fa-solid fa-cart-plus mr-1"></i> টিকিট নিশ্চিত করুন (৳ <span id="total-price">২০</span>)
+                    </button>
+                </div>
+
+                <!-- Live Public Feed Ticker -->
+                <div class="bg-slate-800/80 p-3 rounded-2xl border border-rose-500/30 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-rose-400 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span> লাইভ পাবলিক টিকিট ফিড
+                        </span>
+                        <span id="live-players-count" class="text-[10px] text-emerald-400 font-bold bg-emerald-950/70 px-2 py-0.5 rounded-full border border-emerald-700/40">অনলাইন: ১৪২ জন</span>
+                    </div>
+                    <div id="live-feed-box" class="text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/60 flex items-center justify-between">
+                        <span><b class="text-amber-300">সাকিব৭৭</b> এইমাত্র টিকিট <b class="font-mono text-white">#৮৩৯২</b> কিনেছেন</span>
+                        <span class="text-[10px] text-slate-500">এখনই</span>
+                    </div>
+                </div>
+
+                <!-- Prize Breakdown Card -->
+                <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700 space-y-2">
+                    <h4 class="text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-award text-amber-400"></i> পুরস্কারের তালিকা
+                    </h4>
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-700/50">
+                            <span class="font-semibold text-yellow-300">১ম পুরস্কার (১ জন)</span>
+                            <span class="font-bold text-amber-400">৳ ১,০০,০০০</span>
+                        </div>
+                        <div class="flex justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-700/50">
+                            <span class="font-semibold text-slate-300">২য় পুরস্কার (৩ জন)</span>
+                            <span class="font-bold text-amber-400">৳ ২০,০০০</span>
+                        </div>
+                        <div class="flex justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-700/50">
+                            <span class="font-semibold text-slate-300">৩য় পুরস্কার (১০ জন)</span>
+                            <span class="font-bold text-amber-400">৳ ৫,০০০</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: LIVE DRAW -->
+            <div id="view-draw" class="hidden space-y-4 text-center">
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-rose-500/40 shadow-sm space-y-4 relative overflow-hidden">
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center gap-1.5 bg-rose-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full animate-pulse">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white"></span> LIVE LOTTERY DRAW
+                        </span>
+                        <span class="text-xs font-mono font-bold text-amber-300 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-700">
+                            রাউন্ড #<span id="live-round-num">১০৪</span>
+                        </span>
+                    </div>
+
+                    <h3 class="text-base font-bold text-amber-400 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-trophy"></i> লাইভ মেগা ড্র মেশিন
+                    </h3>
+                    
+                    <!-- Live Countdown & Spinning Box -->
+                    <div class="w-56 h-32 mx-auto rounded-2xl bg-gradient-to-b from-slate-950 to-slate-900 border-2 border-amber-500/60 flex flex-col items-center justify-center shadow-inner animate-glow">
+                        <p id="live-box-label" class="text-[10px] text-amber-400/80 uppercase tracking-widest mb-1">অটো লাইভ ড্র শুরু হতে বাকি</p>
+                        <div id="draw-spinner" class="text-3xl font-black text-amber-300 font-mono tracking-widest">
+                            ০০:৩০
+                        </div>
+                        <p id="live-participants-badge" class="text-[10px] text-emerald-400 mt-1 font-semibold">মোট অংশগ্রহণকারী: ৮৯ জন</p>
+                    </div>
+
+                    <p id="draw-status-text" class="text-xs text-slate-300">প্রতি ৩০ সেকেন্ড পরপর স্বয়ংক্রিয়ভাবে লাইভ ড্র অনুষ্ঠিত হয় অথবা নিচে ক্লিক করে তাৎক্ষণিক ড্র করুন।</p>
+
+                    <button onclick="startLuckyDraw()" id="btn-start-draw" class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white font-bold text-sm shadow-lg active:scale-98 transition">
+                        <i class="fa-solid fa-bolt mr-1"></i> ইনস্ট্যান্ট লাইভ ড্র করুন
+                    </button>
+                </div>
+
+                <!-- Recent Winners Announcement -->
+                <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700 text-left space-y-2">
+                    <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bullhorn text-amber-400"></i> লাইভ বিজয়ীদের তালিকা
+                    </h4>
+                    <div id="winners-list" class="space-y-2 max-h-40 overflow-y-auto no-scrollbar text-xs">
+                        <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-700/50 flex justify-between">
+                            <span>রাউন্ড #১০৩ • টিকিট <b class="font-mono text-amber-300">#৭৪৭৭</b> (রাজা৪২০)</span>
+                            <span class="text-amber-400 font-bold">৳ ১,০০,০০০</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: MY TICKETS -->
+            <div id="view-my-tickets" class="hidden space-y-3">
+                <div class="bg-slate-800/90 p-4 rounded-2xl border border-slate-700 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-wallet text-amber-400"></i> আমার ওয়ালেট ও টিকিটসমূহ
+                        </h3>
+                        <span class="text-xs text-emerald-400 font-bold bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-700/50">ব্যালেন্স: <span id="user-coins">৳ ৫,০০০</span></span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-700/60 pb-2">
+                        <span>সক্রিয় লাইভ লটারি টিকিট</span>
+                        <span id="total-tickets-count" class="text-amber-400 font-bold">মোট: ০ টি</span>
+                    </div>
+
+                    <div id="my-tickets-container" class="space-y-2.5 max-h-96 overflow-y-auto no-scrollbar">
+                        <!-- Dynamic Tickets injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: LUCKY SPIN WHEEL GAME -->
+            <div id="view-spin" class="hidden space-y-4 text-center">
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-amber-400 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-dharmachakra"></i> লাকি স্পিন হুইল
+                    </h3>
+                    <p class="text-xs text-slate-300">প্রতি স্পিনে খরচ ৳ ৫০। জিতে নিন আকর্ষণীয় পুরস্কার!</p>
+                    
+                    <!-- Spin Wheel Graphic -->
+                    <div class="relative w-44 h-44 mx-auto flex items-center justify-center">
+                        <div id="wheel-element" class="w-full h-full rounded-full border-4 border-amber-500 bg-gradient-to-tr from-amber-600 via-yellow-500 to-amber-700 flex items-center justify-center shadow-xl transition-all duration-1000">
+                            <span class="text-slate-950 font-black text-sm bg-white/80 px-2 py-1 rounded-full shadow">স্পিন হুইল</span>
+                        </div>
+                        <div class="absolute -top-3 w-4 h-6 bg-rose-500 clip-triangle shadow-md"></div>
+                    </div>
+
+                    <p id="spin-status-text" class="text-xs text-amber-300 font-bold">স্পিন করতে প্রস্তুত</p>
+
+                    <button onclick="startSpinWheel()" id="btn-spin" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 font-black text-sm shadow-lg active:scale-98 transition">
+                        <i class="fa-solid fa-play mr-1"></i> স্পিন করুন (৳ ৫০)
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECTION 5: COIN FLIP GAME -->
+            <div id="view-coin" class="hidden space-y-4 text-center">
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-amber-400 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-coins"></i> কয়েন ফ্লিপ (হেড বা টেল)
+                    </h3>
+                    <p class="text-xs text-slate-300">সঠিক অনুমান করলে আপনার বাজি দ্বিগুণ হয়ে যাবে!</p>
+
+                    <!-- Coin Choice -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectCoinSide('head')" id="btn-side-head" class="py-2.5 rounded-xl border border-amber-500 bg-amber-500/20 text-amber-300 font-bold text-xs transition">
+                            হেড (Head)
+                        </button>
+                        <button onclick="selectCoinSide('tail')" id="btn-side-tail" class="py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-400 font-bold text-xs transition">
+                            টেল (Tail)
+                        </button>
+                    </div>
+
+                    <!-- Coin Display Box -->
+                    <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-r from-yellow-500 to-amber-600 border-4 border-yellow-300 flex items-center justify-center shadow-xl animate-float">
+                        <span id="coin-display-text" class="text-slate-950 font-black text-xl font-mono">৳</span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs px-2">
+                        <span class="text-slate-400">বাজির পরিমাণ:</span>
+                        <span class="font-bold text-amber-300">৳ ১০০</span>
+                    </div>
+
+                    <p id="coin-status-text" class="text-xs text-slate-300">আপনার পক্ষ বেছে নিন এবং ফ্লিপ করুন।</p>
+
+                    <button onclick="startCoinFlip()" id="btn-flip" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg active:scale-98 transition">
+                        <i class="fa-solid fa-rotate mr-1"></i> কয়েন ফ্লিপ করুন (৳ ১০০)
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECTION 6: THREE DICE GAME -->
+            <div id="view-dice" class="hidden space-y-4 text-center">
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-amber-400 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-dice"></i> ৩ ছক্কা খেলা (Dice Roll)
+                    </h3>
+                    <p class="text-xs text-slate-300">তিনটি ছক্কার যোগফল ১০ এর বেশি (Over) নাকি কম (Under) হবে অনুমান করুন!</p>
+
+                    <!-- Dice Selection Choice -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectDiceChoice('over')" id="btn-dice-over" class="py-2.5 rounded-xl border border-amber-500 bg-amber-500/20 text-amber-300 font-bold text-xs transition">
+                            ওভার (১০ এর বেশি - ১১ থেকে ১৮)
+                        </button>
+                        <button onclick="selectDiceChoice('under')" id="btn-dice-under" class="py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-400 font-bold text-xs transition">
+                            আন্ডার (১০ বা কম - ৩ থেকে ১০)
+                        </button>
+                    </div>
+
+                    <!-- 3 Dice Graphic Box -->
+                    <div class="flex items-center justify-center gap-3 py-2">
+                        <div id="dice-1" class="w-14 h-14 rounded-xl bg-slate-900 border-2 border-amber-500 flex items-center justify-center text-2xl font-black text-amber-300 shadow-inner">
+                            ⚀
+                        </div>
+                        <div id="dice-2" class="w-14 h-14 rounded-xl bg-slate-900 border-2 border-amber-500 flex items-center justify-center text-2xl font-black text-amber-300 shadow-inner">
+                            ⚁
+                        </div>
+                        <div id="dice-3" class="w-14 h-14 rounded-xl bg-slate-900 border-2 border-amber-500 flex items-center justify-center text-2xl font-black text-amber-300 shadow-inner">
+                            ⚂
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs px-2">
+                        <span class="text-slate-400">বাজির পরিমাণ:</span>
+                        <span class="font-bold text-amber-300">৳ ১০০</span>
+                    </div>
+
+                    <p id="dice-status-text" class="text-xs text-slate-300">আপনার বাজি সিলেক্ট করে ছক্কা রোল করুন।</p>
+
+                    <button onclick="startDiceRoll()" id="btn-roll-dice" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg active:scale-98 transition">
+                        <i class="fa-solid fa-dice mr-1"></i> ছক্কা রোল করুন (৳ ১০০)
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECTION 7: JILI GAMES ARENA -->
+            <div id="view-jili" class="hidden space-y-4 text-center">
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-gem text-amber-400"></i> জিলি লাইভ গেমস (Jili Arena)
+                        </h3>
+                        <span class="text-[10px] bg-rose-600/30 text-rose-300 px-2 py-0.5 rounded-full border border-rose-500/30 font-bold">হট জিলি</span>
+                    </div>
+                    <p class="text-xs text-slate-300">জিলি মাইন্স প্রিমিয়াম বক্স গেম! বোমা এড়িয়ে হীরা খুঁজে নিন এবং পুরস্কার জিতে নিন।</p>
+
+                    <!-- Jili Mines Grid (3x3) -->
+                    <div id="jili-mines-grid" class="grid grid-cols-3 gap-2.5 max-w-[260px] mx-auto py-2">
+                        <button onclick="clickJiliTile(0)" class="h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-slate-400 transition font-bold shadow-inner" id="jili-tile-0">?</button>
+                        <button onclick="clickJiliTile(1)" class="h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-slate-400 transition font-bold shadow-inner" id="jili-tile-1">?</button>
+                        <button onclick="clickJiliTile(2)" class="h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-slate-400 transition font-bold shadow-inner" id="jili-tile-2">?</button>
+                        <button onclick="clickJiliTile(3)" class="h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-slate-400 transition font-bold shadow-inner" id="jili-tile-3">?</button>
+                        <button onclick="clickJiliTile(4)" class="h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-slate-400 transition font-bold shadow-inner" id="jili-tile-4">?</button>
+                        <button onclick="clickJiliTile(5)" class="h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-slate-400 transition font-bold shadow-inner" id="jili-tile-5">?</button>
+                        <button onclick="clickJiliTile(6)" class="h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-slate-400 transition font-bold shadow-inner" id="jili-tile-6">?</button>
+                        <button onclick="clickJiliTile(7)" class="h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-slate-400 transition font-bold shadow-inner" id="jili-tile-7">?</button>
+                        <button onclick="clickJiliTile(8)" class="h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-slate-400 transition font-bold shadow-inner" id="jili-tile-8">?</button>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs px-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700">
+                        <span class="text-slate-400">বাজি: <b class="text-amber-300">৳ ১০০</b></span>
+                        <span class="text-slate-400">বর্তমান প্রফিট: <b id="jili-profit" class="text-emerald-400">৳ ০</b></span>
+                    </div>
+
+                    <p id="jili-status-text" class="text-xs text-slate-300">খেলা শুরু করতে "নতুন রাউন্ড" বাটনে ক্লিক করুন।</p>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="startJiliGame()" id="btn-jili-start" class="py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 font-black text-xs shadow-lg active:scale-98 transition">
+                            <i class="fa-solid fa-play mr-1"></i> নতুন রাউন্ড (৳ ১০০)
+                        </button>
+                        <button onclick="cashoutJiliGame()" id="btn-jili-cashout" disabled class="py-3 rounded-xl bg-slate-700 text-slate-400 font-bold text-xs shadow-md cursor-not-allowed transition">
+                            <i class="fa-solid fa-hand-holding-dollar mr-1"></i> ক্যাশ আউট
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer / Bottom Note -->
+        <footer class="bg-slate-950 border-t border-slate-800 py-2.5 px-4 text-center text-[10px] text-slate-500">
+            পাবলিক লটারি ড্র গেম • বিনোদনের জন্য তৈরিকৃত সিমুলেটর
+        </footer>
+
+    </div>
+
+    <!-- Full Mobile Banking Deposit Overlay (bKash / Nagad Style) -->
+    <div id="deposit-wallet-overlay" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+        <div class="w-full max-w-[420px] bg-slate-900 rounded-[2.25rem] shadow-2xl overflow-hidden border-[6px] border-emerald-700 flex flex-col h-[820px] max-h-[92vh] relative text-slate-100">
+            
+            <!-- Wallet Header -->
+            <div class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-700 px-5 pt-4 pb-5 rounded-b-[1.75rem] shadow-lg">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white/60 flex items-center justify-center text-base font-bold text-white">
+                            রা
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-white">রাজা৪২০ • পেমেন্ট ওয়ালেট</h2>
+                            <p class="text-[11px] text-emerald-100">বিকাশ ও নগদ ডিপোজিট প্যানেল</p>
+                        </div>
+                    </div>
+                    <button onclick="closeDepositWallet()" class="w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center text-sm font-bold transition">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Wallet Method Switcher (bKash / Nagad) -->
+                <div class="grid grid-cols-2 gap-2 bg-black/25 p-1 rounded-xl border border-emerald-400/30">
+                    <button onclick="selectDepositMethod('bkash')" id="btn-method-bkash" class="py-2 rounded-lg text-xs font-bold bg-white text-emerald-800 shadow transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-paper-plane text-pink-600"></i> বিকাশ (bKash)
+                    </button>
+                    <button onclick="selectDepositMethod('nagad')" id="btn-method-nagad" class="py-2 rounded-lg text-xs font-bold text-emerald-100 hover:text-white transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-fire text-orange-400"></i> নগদ (Nagad)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Wallet Body -->
+            <div class="flex-1 overflow-y-auto no-scrollbar p-5 space-y-4">
+                
+                <!-- Current Game Balance Display -->
+                <div class="bg-slate-800/80 p-3.5 rounded-2xl border border-emerald-600/30 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] text-slate-400">বর্তমান গেম ব্যালেন্স</p>
+                        <p id="wallet-balance-preview" class="text-lg font-black text-emerald-400">৳ ৫,০০০</p>
+                    </div>
+                    <span id="active-method-badge" class="px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 text-xs font-bold border border-emerald-700/50">
+                        বিকাশ পেমেন্ট
+                    </span>
+                </div>
+
+                <!-- Add Personal Number Section -->
+                <div class="bg-slate-800/90 p-4 rounded-2xl border border-slate-700 space-y-3">
+                    <label class="block text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-mobile-screen-button"></i> আপনার ১১ সংখ্যার <span id="method-name-label">বিকাশ</span> নম্বর দিন:
+                    </label>
+                    <input type="tel" id="deposit-sender-number" maxlength="11" placeholder="01XXXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-mono font-bold text-white tracking-wider">
+                </div>
+
+                <!-- Deposit Amount Input & Presets -->
+                <div class="bg-slate-800/90 p-4 rounded-2xl border border-slate-700 space-y-3">
+                    <label class="block text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bangladeshi-taka-sign"></i> ডিপোজিটের পরিমাণ (৳):
+                    </label>
+                    <input type="number" id="deposit-custom-amount" placeholder="টাকার পরিমাণ লিখুন (যেমন: ১০০০)" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base font-bold text-emerald-300">
+                    
+                    <div class="grid grid-cols-4 gap-2 pt-1">
+                        <button onclick="setDepositPreset(500)" class="py-2 rounded-xl bg-slate-900 hover:bg-emerald-900/50 border border-slate-700 text-xs font-bold text-slate-200 transition">৳ ৫০০</button>
+                        <button onclick="setDepositPreset(1000)" class="py-2 rounded-xl bg-slate-900 hover:bg-emerald-900/50 border border-slate-700 text-xs font-bold text-slate-200 transition">৳ ১,০০০</button>
+                        <button onclick="setDepositPreset(2000)" class="py-2 rounded-xl bg-slate-900 hover:bg-emerald-900/50 border border-slate-700 text-xs font-bold text-slate-200 transition">৳ ২,০০০</button>
+                        <button onclick="setDepositPreset(5000)" class="py-2 rounded-xl bg-slate-900 hover:bg-emerald-900/50 border border-slate-700 text-xs font-bold text-slate-200 transition">৳ ৫,০০০</button>
+                    </div>
+                </div>
+
+                <!-- 5-Digit PIN Input -->
+                <div class="bg-slate-800/90 p-4 rounded-2xl border border-slate-700 space-y-2">
+                    <label class="block text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock"></i> ৫ সংখ্যার পিন (PIN) দিন:
+                    </label>
+                    <input type="password" id="deposit-pin-input" maxlength="5" placeholder="•••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center text-lg tracking-[0.5em] font-bold text-white">
+                </div>
+
+                <p id="deposit-error-msg" class="hidden text-xs text-rose-400 font-semibold bg-rose-950/60 p-2.5 rounded-xl border border-rose-800/50 text-center"></p>
+
+                <!-- Confirm Deposit Button -->
+                <button onclick="processWalletDeposit()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm shadow-lg active:scale-98 transition">
+                    <i class="fa-solid fa-circle-check mr-1"></i> ডিপোজিট নিশ্চিত করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Notification / Alert -->
+    <div id="custom-modal" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 w-full max-w-xs rounded-3xl p-5 border border-amber-500/40 shadow-2xl text-center space-y-3 animate-float">
+            <div id="modal-icon-wrap" class="w-14 h-14 rounded-full bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center text-2xl">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h3 id="modal-title" class="text-base font-bold text-white">অভিনন্দন!</h3>
+            <p id="modal-desc" class="text-xs text-slate-300 leading-relaxed">আপনি লটারিতে ১ম পুরস্কার জিতেছেন!</p>
+            <button onclick="closeCustomModal()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-md">
+                ঠিক আছে
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        const state = {
+            coins: 5000,
+            ticketPrice: 20,
+            quantity: 1,
+            myTickets: [],
+            winners: [
+                { ticket: '৪৭৮২', name: 'রহিম মিয়া', prize: '৳ ১,০০,০০০' },
+                { ticket: '৯১২৩', name: 'করিম উল্লাহ', prize: '৳ ২০,০০০' }
+            ],
+            selectedCoinSide: 'head',
+            selectedDiceChoice: 'over',
+            jiliActive: false,
+            jiliMineIndex: -1,
+            jiliRevealedCount: 0,
+            jiliCurrentProfit: 0,
+            depositMethod: 'bkash',
+            liveSecondsLeft: 30,
+            liveRound: 104,
+            isDrawingNow: false
+        };
+
+        // RAJA420 Link / Gateway Verification
+        function enterRaja420Portal() {
+            const inputVal = document.getElementById('raja-link-input').value.trim().toLowerCase();
+            const errorEl = document.getElementById('gateway-error');
+
+            if (inputVal === 'raja420' || inputVal === 'raja420.live' || inputVal === 'https://raja420.live') {
+                errorEl.classList.add('hidden');
+                document.getElementById('raja420-gateway').classList.add('hidden');
+                document.getElementById('main-game-app').classList.remove('hidden');
+            } else {
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        // Helper to sync balance UI across all views
+        function updateBalanceDisplay() {
+            const formatted = '৳ ' + state.coins.toLocaleString('en-IN');
+            const userCoinsEl = document.getElementById('user-coins');
+            const walletPreviewEl = document.getElementById('wallet-balance-preview');
+            if (userCoinsEl) userCoinsEl.textContent = formatted;
+            if (walletPreviewEl) walletPreviewEl.textContent = formatted;
+        }
+
+        // Convert English numbers to Bengali digits
+        function toBengaliDigits(numStr) {
+            const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            return numStr.toString().replace(/\d/g, d => bnDigits[d]);
+        }
+
+        // Live Lottery Timer & Public Activity Simulator
+        function initLiveLotterySystem() {
+            const sampleNames = ['তানভীর৯৯', 'নাসিম_বিডি', 'আরিফ_খান', 'সুমাইয়া', 'রাকিবুল', 'মেহেদী_হাসান', 'জাহিদ_৪২০', 'ফাহিম_স্টার'];
+            
+            // Update live public ticket purchase feed every 4 seconds
+            setInterval(() => {
+                const randomUser = sampleNames[Math.floor(Math.random() * sampleNames.length)];
+                const randomTic = Math.floor(1000 + Math.random() * 9000);
+                const onlineCount = Math.floor(125 + Math.random() * 55);
+                
+                const feedBox = document.getElementById('live-feed-box');
+                const playersBadge = document.getElementById('live-players-count');
+                const participantsBadge = document.getElementById('live-participants-badge');
+                
+                if (feedBox) {
+                    feedBox.innerHTML = `
+                        <span><b class="text-amber-300">${randomUser}</b> এইমাত্র টিকিট <b class="font-mono text-white">#${randomTic}</b> কিনেছেন</span>
+                        <span class="text-[10px] text-emerald-400 font-semibold">লাইভ</span>
+                    `;
+                }
+                if (playersBadge) playersBadge.textContent = `অনলাইন: ${toBengaliDigits(onlineCount)} জন`;
+                if (participantsBadge) participantsBadge.textContent = `মোট অংশগ্রহণকারী: ${toBengaliDigits(onlineCount - 28)} জন`;
+            }, 4000);
+
+            // Live 30-second countdown loop for automatic live lottery draw
+            setInterval(() => {
+                if (state.isDrawingNow) return;
+
+                state.liveSecondsLeft--;
+                const formattedSec = '০০:' + toBengaliDigits(state.liveSecondsLeft.toString().padStart(2, '0'));
+                
+                const headerTimer = document.getElementById('draw-timer');
+                const drawSpinner = document.getElementById('draw-spinner');
+                const boxLabel = document.getElementById('live-box-label');
+
+                if (headerTimer) headerTimer.textContent = formattedSec;
+                if (drawSpinner && !state.isDrawingNow) {
+                    drawSpinner.textContent = formattedSec;
+                }
+                if (boxLabel) boxLabel.textContent = 'অটো লাইভ ড্র শুরু হতে বাকি';
+
+                if (state.liveSecondsLeft <= 0) {
+                    runLiveDrawCycle(true);
+                }
+            }, 1000);
+        }
+
+        // Deposit Wallet Navigation & Actions
+        function openDepositWallet() {
+            updateBalanceDisplay();
+            document.getElementById('deposit-error-msg').classList.add('hidden');
+            document.getElementById('deposit-wallet-overlay').classList.remove('hidden');
+        }
+
+        function closeDepositWallet() {
+            document.getElementById('deposit-wallet-overlay').classList.add('hidden');
+        }
+
+        function selectDepositMethod(method) {
+            state.depositMethod = method;
+            const bkashBtn = document.getElementById('btn-method-bkash');
+            const nagadBtn = document.getElementById('btn-method-nagad');
+            const badge = document.getElementById('active-method-badge');
+            const label = document.getElementById('method-name-label');
+
+            if (method === 'bkash') {
+                bkashBtn.className = 'py-2 rounded-lg text-xs font-bold bg-white text-emerald-800 shadow transition flex items-center justify-center gap-1.5';
+                nagadBtn.className = 'py-2 rounded-lg text-xs font-bold text-emerald-100 hover:text-white transition flex items-center justify-center gap-1.5';
+                badge.textContent = 'বিকাশ পেমেন্ট';
+                label.textContent = 'বিকাশ';
+            } else {
+                nagadBtn.className = 'py-2 rounded-lg text-xs font-bold bg-white text-emerald-800 shadow transition flex items-center justify-center gap-1.5';
+                bkashBtn.className = 'py-2 rounded-lg text-xs font-bold text-emerald-100 hover:text-white transition flex items-center justify-center gap-1.5';
+                badge.textContent = 'নগদ পেমেন্ট';
+                label.textContent = 'নগদ';
+            }
+        }
+
+        function setDepositPreset(amount) {
+            document.getElementById('deposit-custom-amount').value = amount;
+        }
+
+        function processWalletDeposit() {
+            const number = document.getElementById('deposit-sender-number').value.trim();
+            const amount = parseInt(document.getElementById('deposit-custom-amount').value, 10);
+            const pin = document.getElementById('deposit-pin-input').value.trim();
+            const errorEl = document.getElementById('deposit-error-msg');
+
+            if (!/^01\d{9}$/.test(number)) {
+                errorEl.textContent = 'দয়া করে সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন (01 দিয়ে শুরু)।';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            if (isNaN(amount) || amount < 50) {
+                errorEl.textContent = 'ন্যূনতম ৫০ টাকা ডিপোজিট পরিমাণ লিখুন।';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            if (!/^\d{5}$/.test(pin)) {
+                errorEl.textContent = 'দয়া করে আপনার ৫ সংখ্যার সঠিক পিন দিন।';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+            state.coins += amount;
+            updateBalanceDisplay();
+
+            // Clear PIN & Amount after deposit
+            document.getElementById('deposit-custom-amount').value = '';
+            document.getElementById('deposit-pin-input').value = '';
+
+            closeDepositWallet();
+            const methodTitle = state.depositMethod === 'bkash' ? 'বিকাশ' : 'নগদ';
+            const trxId = 'TRX' + Math.floor(10000000 + Math.random() * 90000000);
+            showModal('ডিপোজিট সফল হয়েছে!', `${methodTitle} (${number}) থেকে ৳ ${amount.toLocaleString('en-IN')} সফলভাবে যোগ হয়েছে। TrxID: ${trxId}`, 'fa-circle-check', 'text-emerald-400');
+        }
+
+        // Switch Tabs
+        function switchTab(tabName) {
+            const tabs = ['buy', 'draw', 'spin', 'jili', 'dice', 'coin', 'my-tickets'];
+            tabs.forEach(t => {
+                const viewEl = document.getElementById(`view-${t}`);
+                const tabBtn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    viewEl.classList.remove('hidden');
+                    tabBtn.className = 'py-2 rounded-xl text-[10px] font-bold transition flex flex-col items-center justify-center gap-0.5 bg-amber-600 text-white shadow-md';
+                } else {
+                    viewEl.classList.add('hidden');
+                    tabBtn.className = 'py-2 rounded-xl text-[10px] font-bold transition flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-white';
+                }
+            });
+            if (tabName === 'my-tickets') {
+                renderMyTickets();
+            }
+        }
+
+        // Adjust Quantity
+        function adjustQty(change) {
+            state.quantity = Math.max(1, Math.min(10, state.quantity + change));
+            document.getElementById('ticket-qty').textContent = state.quantity;
+            document.getElementById('total-price').textContent = state.quantity * state.ticketPrice;
+        }
+
+        // Generate Random 4-digit Number
+        function generateRandomNumber() {
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('custom-ticket-num').value = randomNum;
+        }
+
+        // Buy Ticket
+        function buyTicket() {
+            const inputVal = document.getElementById('custom-ticket-num').value.trim();
+            const errorEl = document.getElementById('buy-error');
+            const totalCost = state.quantity * state.ticketPrice;
+
+            let ticketNum = inputVal;
+            if (!ticketNum) {
+                ticketNum = Math.floor(1000 + Math.random() * 9000).toString();
+                document.getElementById('custom-ticket-num').value = ticketNum;
+            }
+
+            if (!/^\d{4}$/.test(ticketNum)) {
+                errorEl.textContent = 'দয়া করে সঠিক ৪ অংকের নম্বর দিন (যেমন: ১১২৩)।';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            if (state.coins < totalCost) {
+                errorEl.textContent = 'আপনার পর্যাপ্ত কয়েন বা ব্যালেন্স নেই!';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+            state.coins -= totalCost;
+            updateBalanceDisplay();
+
+            // Add ticket(s)
+            for (let i = 0; i < state.quantity; i++) {
+                // If quantity > 1, generate slightly varied numbers or same
+                const finalNum = i === 0 ? ticketNum : Math.floor(1000 + Math.random() * 9000).toString();
+                state.myTickets.push({
+                    id: 'TIC-' + Math.floor(100000 + Math.random() * 900000),
+                    number: finalNum,
+                    round: state.liveRound,
+                    date: 'লাইভ রাউন্ড #' + toBengaliDigits(state.liveRound)
+                });
+            }
+            
+            showModal('লাইভ টিকিট নিশ্চিত!', `রাউন্ড #${toBengaliDigits(state.liveRound)}-এর জন্য ${toBengaliDigits(state.quantity)}টি লটারি টিকিট কেনা হয়েছে।`, 'fa-ticket', 'text-amber-400');
+        }
+
+        // Render My Tickets
+        function renderMyTickets() {
+            const container = document.getElementById('my-tickets-container');
+            document.getElementById('total-tickets-count').textContent = `মোট: ${state.myTickets.length} টি`;
+            container.innerHTML = '';
+
+            if (state.myTickets.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 text-slate-500 text-xs">
+                        আপনার কোনো টিকিট কেনা নেই। 'টিকিট কিনুন' ট্যাব থেকে টিকিট সংগ্রহ করুন।
+                    </div>
+                `;
+                return;
+            }
+
+            state.myTickets.forEach((tic, index) => {
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-ticket"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-black text-amber-300 font-mono tracking-wider">${tic.number}</p>
+                                <p class="text-[10px] text-slate-400">${tic.id} • ${tic.date}</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 text-[10px] font-bold border border-emerald-800/50">সক্রিয়</span>
+                    </div>
+                `);
+            });
+        }
+
+        // Start Lucky Draw Simulation (Manual or Auto Live Cycle)
+        function startLuckyDraw() {
+            if (state.myTickets.length === 0) {
+                showModal('সতর্কতা', 'লাইভ ড্রতে অংশ নিতে হলে প্রথমে অন্তত একটি টিকিট কিনতে হবে!', 'fa-triangle-exclamation', 'text-amber-400');
+                return;
+            }
+            runLiveDrawCycle(false);
+        }
+
+        function runLiveDrawCycle(isAuto) {
+            if (state.isDrawingNow) return;
+            state.isDrawingNow = true;
+
+            const spinner = document.getElementById('draw-spinner');
+            const statusText = document.getElementById('draw-status-text');
+            const drawBtn = document.getElementById('btn-start-draw');
+            const boxLabel = document.getElementById('live-box-label');
+            const winnersList = document.getElementById('winners-list');
+
+            if (drawBtn) drawBtn.disabled = true;
+            if (boxLabel) boxLabel.textContent = 'লাইভ ড্র চলছে...';
+            if (statusText) statusText.textContent = 'লাইভ লটারি মেশিন ঘুরছে! বিজয়ী নম্বর নির্ধারিত হচ্ছে...';
+
+            let counter = 0;
+            const interval = setInterval(() => {
+                if (spinner) spinner.textContent = Math.floor(1000 + Math.random() * 9000);
+                counter++;
+
+                if (counter > 22) {
+                    clearInterval(interval);
+                    
+                    const hasTickets = state.myTickets.length > 0;
+                    const randomTic = hasTickets ? state.myTickets[Math.floor(Math.random() * state.myTickets.length)] : null;
+                    const winningNum = (hasTickets && Math.random() > 0.45)
+                        ? randomTic.number
+                        : Math.floor(1000 + Math.random() * 9000).toString();
+                    
+                    if (spinner) spinner.textContent = winningNum;
+                    if (boxLabel) boxLabel.textContent = `রাউন্ড #${toBengaliDigits(state.liveRound)} বিজয়ী নম্বর`;
+
+                    const matchedTicket = state.myTickets.find(t => t.number === winningNum);
+                    let winnerName = 'পাবলিক প্লেয়ার';
+
+                    if (matchedTicket) {
+                        winnerName = 'রাজা৪২০ (আপনি)';
+                        const prizeAmount = 100000;
+                        state.coins += prizeAmount;
+                        updateBalanceDisplay();
+                        if (statusText) statusText.textContent = `অভিনন্দন! লাইভ রাউন্ড #${toBengaliDigits(state.liveRound)}-এ আপনার টিকিট (${winningNum}) ১ম পুরস্কার জিতেছে!`;
+                        showModal('লাইভ লটারি জয়!', `অসাধারণ! লাইভ ড্রতে আপনার টিকিট নম্বর ${winningNum} ১ম পুরস্কার (৳ ১,০০,০০০) জিতেছে!`, 'fa-trophy', 'text-yellow-400');
+                    } else {
+                        if (statusText) statusText.textContent = `লাইভ রাউন্ড #${toBengaliDigits(state.liveRound)} সম্পন্ন! বিজয়ী নম্বর: ${winningNum}। নতুন রাউন্ড শুরু হচ্ছে...`;
+                        if (!isAuto) {
+                            showModal('লাইভ ড্র ফলাফল', `রাউন্ড #${toBengaliDigits(state.liveRound)}-এর বিজয়ী নম্বর: ${winningNum}। পরের রাউন্ডে আবার চেষ্টা করুন!`, 'fa-tower-broadcast', 'text-amber-400');
+                        }
+                    }
+
+                    // Add result to Live Winners List
+                    if (winnersList) {
+                        winnersList.insertAdjacentHTML('afterbegin', `
+                            <div class="p-2 rounded-xl bg-slate-900/80 border border-amber-500/30 flex justify-between items-center">
+                                <span>রাউন্ড #${toBengaliDigits(state.liveRound)} • টিকিট <b class="font-mono text-amber-300">#${winningNum}</b> (${winnerName})</span>
+                                <span class="text-amber-400 font-bold">৳ ১,০০,০০০</span>
+                            </div>
+                        `);
+                    }
+
+                    // Advance to next Live Lottery Round
+                    state.liveRound++;
+                    state.liveSecondsLeft = 30;
+                    const roundEl = document.getElementById('live-round-num');
+                    if (roundEl) roundEl.textContent = toBengaliDigits(state.liveRound);
+
+                    setTimeout(() => {
+                        state.isDrawingNow = false;
+                        if (drawBtn) drawBtn.disabled = false;
+                    }, 3000);
+                }
+            }, 100);
+        }
+
+        // Spin Wheel Game Logic
+        function startSpinWheel() {
+            const spinCost = 50;
+            if (state.coins < spinCost) {
+                showModal('অপর্যাপ্ত ব্যালেন্স', 'স্পিন করার জন্য আপনার পর্যাপ্ত কয়েন বা ব্যালেন্স নেই!', 'fa-triangle-exclamation', 'text-amber-400');
+                return;
+            }
+
+            state.coins -= spinCost;
+            document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+
+            const wheel = document.getElementById('wheel-element');
+            const statusText = document.getElementById('spin-status-text');
+            const spinBtn = document.getElementById('btn-spin');
+
+            spinBtn.disabled = true;
+            statusText.textContent = 'হুইল ঘুরছে...';
+
+            const randomDeg = Math.floor(720 + Math.random() * 1080);
+            wheel.style.transform = `rotate(${randomDeg}deg)`;
+
+            setTimeout(() => {
+                const rewards = [0, 50, 100, 200, 500, 1000];
+                const wonAmount = rewards[Math.floor(Math.random() * rewards.length)];
+
+                state.coins += wonAmount;
+                document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+
+                if (wonAmount > 0) {
+                    statusText.textContent = `অভিনন্দন! আপনি স্পিন করে জিতেছেন ৳ ${wonAmount}!`;
+                    showModal('স্পিন জয়!', `চমৎকার! আপনি স্পিন করে ৳ ${wonAmount} জিতেছেন!`, 'fa-dharmachakra', 'text-amber-400');
+                } else {
+                    statusText.textContent = `দুঃখিত! এবার কোনো পুরস্কার জেতেননি।`;
+                    showModal('স্পিন ফলাফল', `এ যাত্রায় ভাগ্য আপনার সাথে ছিল না। আবার চেষ্টা করুন!`, 'fa-face-frown', 'text-slate-400');
+                }
+
+                spinBtn.disabled = false;
+            }, 1200);
+        }
+
+        // Coin Flip Game Logic
+        function selectCoinSide(side) {
+            state.selectedCoinSide = side;
+            const headBtn = document.getElementById('btn-side-head');
+            const tailBtn = document.getElementById('btn-side-tail');
+
+            if (side === 'head') {
+                headBtn.className = 'py-2.5 rounded-xl border border-amber-500 bg-amber-500/20 text-amber-300 font-bold text-xs transition';
+                tailBtn.className = 'py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-400 font-bold text-xs transition';
+            } else {
+                tailBtn.className = 'py-2.5 rounded-xl border border-amber-500 bg-amber-500/20 text-amber-300 font-bold text-xs transition';
+                headBtn.className = 'py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-400 font-bold text-xs transition';
+            }
+        }
+
+        function startCoinFlip() {
+            const betAmount = 100;
+            if (state.coins < betAmount) {
+                showModal('অপর্যাপ্ত ব্যালেন্স', 'কয়েন ফ্লিপ খেলার জন্য পর্যাপ্ত ব্যালেন্স নেই!', 'fa-triangle-exclamation', 'text-amber-400');
+                return;
+            }
+
+            state.coins -= betAmount;
+            document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+
+            const statusText = document.getElementById('coin-status-text');
+            const flipBtn = document.getElementById('btn-flip');
+            const coinText = document.getElementById('coin-display-text');
+
+            flipBtn.disabled = true;
+            statusText.textContent = 'কয়েন আকাশে উড়ছে...';
+            coinText.textContent = '...';
+
+            setTimeout(() => {
+                const sides = ['head', 'tail'];
+                const resultSide = sides[Math.floor(Math.random() * sides.length)];
+
+                coinText.textContent = resultSide === 'head' ? 'হেড' : 'টেল';
+
+                if (resultSide === state.selectedCoinSide) {
+                    const winAmount = betAmount * 2;
+                    state.coins += winAmount;
+                    document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+                    statusText.textContent = `অভিনন্দন! আপনি জিতেছেন ৳ ${winAmount}!`;
+                    showModal('কয়েন ফ্লিপ জয়!', `আপনার অনুমান সঠিক ছিল! আপনি ৳ ${winAmount} জিতেছেন।`, 'fa-coins', 'text-yellow-400');
+                } else {
+                    statusText.textContent = `দুঃখিত! আপনার অনুমান ভুল ছিল (${resultSide === 'head' ? 'হেড' : 'টেল'} এসেছে)।`;
+                    showModal('ফ্লিপ ফলাফল', `দুঃখিত! সঠিক ফলাফল ছিল: ${resultSide === 'head' ? 'হেড' : 'টেল'}।`, 'fa-face-frown', 'text-slate-400');
+                }
+
+                flipBtn.disabled = false;
+            }, 1000);
+        }
+
+        // 3 Dice Game Logic
+        function selectDiceChoice(choice) {
+            state.selectedDiceChoice = choice;
+            const overBtn = document.getElementById('btn-dice-over');
+            const underBtn = document.getElementById('btn-dice-under');
+
+            if (choice === 'over') {
+                overBtn.className = 'py-2.5 rounded-xl border border-amber-500 bg-amber-500/20 text-amber-300 font-bold text-xs transition';
+                underBtn.className = 'py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-400 font-bold text-xs transition';
+            } else {
+                underBtn.className = 'py-2.5 rounded-xl border border-amber-500 bg-amber-500/20 text-amber-300 font-bold text-xs transition';
+                overBtn.className = 'py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-400 font-bold text-xs transition';
+            }
+        }
+
+        function startDiceRoll() {
+            const betAmount = 100;
+            if (state.coins < betAmount) {
+                showModal('অপর্যাপ্ত ব্যালেন্স', '৩ ছক্কা খেলার জন্য পর্যাপ্ত কয়েন বা ব্যালেন্স নেই!', 'fa-triangle-exclamation', 'text-amber-400');
+                return;
+            }
+
+            state.coins -= betAmount;
+            document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+
+            const statusText = document.getElementById('dice-status-text');
+            const rollBtn = document.getElementById('btn-roll-dice');
+            const d1 = document.getElementById('dice-1');
+            const d2 = document.getElementById('dice-2');
+            const d3 = document.getElementById('dice-3');
+
+            rollBtn.disabled = true;
+            statusText.textContent = 'ছক্কাগুলো ঘুরছে...';
+
+            const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+            
+            let counter = 0;
+            const animInterval = setInterval(() => {
+                d1.textContent = diceFaces[Math.floor(Math.random() * 6)];
+                d2.textContent = diceFaces[Math.floor(Math.random() * 6)];
+                d3.textContent = diceFaces[Math.floor(Math.random() * 6)];
+                counter++;
+
+                if (counter > 15) {
+                    clearInterval(animInterval);
+
+                    const val1 = Math.floor(1 + Math.random() * 6);
+                    const val2 = Math.floor(1 + Math.random() * 6);
+                    const val3 = Math.floor(1 + Math.random() * 6);
+                    const totalSum = val1 + val2 + val3;
+
+                    d1.textContent = diceFaces[val1 - 1];
+                    d2.textContent = diceFaces[val2 - 1];
+                    d3.textContent = diceFaces[val3 - 1];
+
+                    const isOver = totalSum > 10;
+                    const resultType = isOver ? 'over' : 'under';
+
+                    if (resultType === state.selectedDiceChoice) {
+                        const winAmount = betAmount * 2;
+                        state.coins += winAmount;
+                        document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+                        statusText.textContent = `অভিনন্দন! যোগফল ${totalSum} (${isOver ? 'ওভার' : 'আন্ডার'})। আপনি ৳ ${winAmount} জিতেছেন!`;
+                        showModal('৩ ছক্কা জয়!', `চমৎকার! ছক্কার যোগফল হয়েছিল ${totalSum}। আপনি ৳ ${winAmount} জিতেছেন!`, 'fa-dice', 'text-yellow-400');
+                    } else {
+                        statusText.textContent = `দুঃখিত! যোগফল ${totalSum} (${isOver ? 'ওভার' : 'আন্ডার'})। আপনার অনুমান ভুল ছিল।`;
+                        showModal('ফলাফল', `ছক্কার যোগফল ছিল ${totalSum}। এ যাত্রায় আপনার অনুমান মেলেনি।`, 'fa-face-frown', 'text-slate-400');
+                    }
+
+                    rollBtn.disabled = false;
+                }
+            }, 100);
+        }
+
+        // Modal Controls
+        function showModal(title, desc, iconClass, iconColorClass) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-desc').textContent = desc;
+            const iconWrap = document.getElementById('modal-icon-wrap');
+            iconWrap.innerHTML = `<i class="fa-solid ${iconClass} ${iconColorClass}"></i>`;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeCustomModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        // Jili Mines Game Logic
+        function startJiliGame() {
+            const betAmount = 100;
+            if (state.coins < betAmount) {
+                showModal('অপর্যাপ্ত ব্যালেন্স', 'জিলি গেম খেলার জন্য পর্যাপ্ত কয়েন বা ব্যালেন্স নেই!', 'fa-triangle-exclamation', 'text-amber-400');
+                return;
+            }
+
+            state.coins -= betAmount;
+            document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+
+            state.jiliActive = true;
+            state.jiliMineIndex = Math.floor(Math.random() * 9);
+            state.jiliRevealedCount = 0;
+            state.jiliCurrentProfit = 120;
+
+            document.getElementById('jili-profit').textContent = '৳ ০';
+            document.getElementById('jili-status-text').textContent = 'বক্স খুলুন! সাবধানে বোমা এড়িয়ে চলুন।';
+            document.getElementById('btn-jili-start').disabled = true;
+            document.getElementById('btn-jili-start').className = 'py-3 rounded-xl bg-slate-700 text-slate-400 font-bold text-xs cursor-not-allowed';
+            
+            const cashoutBtn = document.getElementById('btn-jili-cashout');
+            cashoutBtn.disabled = false;
+            cashoutBtn.className = 'py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs shadow-lg active:scale-98 transition';
+
+            for (let i = 0; i < 9; i++) {
+                const tile = document.getElementById(`jili-tile-${i}`);
+                tile.textContent = '?';
+                tile.className = 'h-16 rounded-xl bg-slate-900 border-2 border-slate-700 hover:border-amber-500 flex items-center justify-center text-xl text-amber-400 transition font-bold shadow-inner cursor-pointer';
+            }
+        }
+
+        function clickJiliTile(index) {
+            if (!state.jiliActive) {
+                showModal('সতর্কতা', 'আগে নতুন রাউন্ড শুরু করুন!', 'fa-triangle-exclamation', 'text-amber-400');
+                return;
+            }
+
+            const tile = document.getElementById(`jili-tile-${index}`);
+            if (tile.dataset.revealed === 'true') return;
+
+            tile.dataset.revealed = 'true';
+
+            if (index === state.jiliMineIndex) {
+                // Hit Bomb!
+                tile.textContent = '💣';
+                tile.className = 'h-16 rounded-xl bg-rose-950 border-2 border-rose-600 flex items-center justify-center text-2xl shadow-inner';
+                document.getElementById('jili-status-text').textContent = 'বম ফেটে গেছে! আপনি রাউন্ড হেরে গেছেন।';
+                endJiliGame(false);
+                showModal('বম বিস্ফোরণ!', 'দুঃখিত! আপনি বোমা সিলেক্ট করে ফেলেছেন এবং কয়েন হারিয়েছেন।', 'fa-bomb', 'text-rose-500');
+            } else {
+                // Found Diamond!
+                tile.textContent = '💎';
+                tile.className = 'h-16 rounded-xl bg-emerald-950 border-2 border-emerald-500 flex items-center justify-center text-2xl shadow-inner';
+                state.jiliRevealedCount++;
+                state.jiliCurrentProfit = 100 + (state.jiliRevealedCount * 80);
+                document.getElementById('jili-profit').textContent = '৳ ' + state.jiliCurrentProfit;
+
+                if (state.jiliRevealedCount >= 8) {
+                    // All diamonds found without bomb!
+                    state.coins += state.jiliCurrentProfit;
+                    document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+                    document.getElementById('jili-status-text').textContent = `অভিনন্দন! সব হীরা খুঁজে পেয়েছেন। জিতেছেন ৳ ${state.jiliCurrentProfit}!`;
+                    endJiliGame(true);
+                    showModal('জিলি জ্যাকপট!', `অসাধারণ! আপনি সমস্ত হীরা খুঁজে পেয়ে ৳ ${state.jiliCurrentProfit} জিতেছেন!`, 'fa-gem', 'text-yellow-400');
+                }
+            }
+        }
+
+        function cashoutJiliGame() {
+            if (!state.jiliActive) return;
+
+            state.coins += state.jiliCurrentProfit;
+            document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+            document.getElementById('jili-status-text').textContent = `সফল ক্যাশআউট! আপনি জিতেছেন ৳ ${state.jiliCurrentProfit}।`;
+            endJiliGame(true);
+            showModal('সফল ক্যাশআউট!', `আপনি সফলভাবে ৳ ${state.jiliCurrentProfit} ক্যাশআউট করেছেন!`, 'fa-hand-holding-dollar', 'text-emerald-400');
+        }
+
+        function endJiliGame(isEnded) {
+            state.jiliActive = false;
+            // Reveal all tiles
+            for (let i = 0; i < 9; i++) {
+                const tile = document.getElementById(`jili-tile-${i}`);
+                tile.dataset.revealed = 'true';
+                if (i === state.jiliMineIndex) {
+                    tile.textContent = '💣';
+                } else if (tile.textContent === '?') {
+                    tile.textContent = '💎';
+                }
+            }
+
+            document.getElementById('btn-jili-start').disabled = false;
+            document.getElementById('btn-jili-start').className = 'py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 font-black text-xs shadow-lg active:scale-98 transition';
+            
+            const cashoutBtn = document.getElementById('btn-jili-cashout');
+            cashoutBtn.disabled = true;
+            cashoutBtn.className = 'py-3 rounded-xl bg-slate-700 text-slate-400 font-bold text-xs shadow-md cursor-not-allowed';
+        }
+
+        // Modal Controls
+        function showModal(title, desc, iconClass, iconColorClass) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-desc').textContent = desc;
+            const iconWrap = document.getElementById('modal-icon-wrap');
+            iconWrap.innerHTML = `<i class="fa-solid ${iconClass} ${iconColorClass}"></i>`;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeCustomModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        function openDepositModal() {
+            document.getElementById('deposit-modal').classList.remove('hidden');
+        }
+
+        function closeDepositModal() {
+            document.getElementById('deposit-modal').classList.add('hidden');
+        }
+
+        function addDepositAmount(amount) {
+            state.coins += amount;
+            document.getElementById('user-coins').textContent = '৳ ' + state.coins.toLocaleString('en-IN');
+            closeDepositModal();
+            showModal('সফল ডিপোজিট!', `আপনার অ্যাকাউন্টে সফলভাবে ৳ ${amount.toLocaleString('en-IN')} ডিপোজিট করা হয়েছে!`, 'fa-circle-check', 'text-emerald-400');
+        }
+
+        // Initialize
+        window.onload = function() {
+            generateRandomNumber();
+            initLiveLotterySystem();
+
+            // Auto-open if URL hash or query has ?raja420 or #raja420
+            const urlCheck = (window.location.hash + window.location.search).toLowerCase();
+            if (urlCheck.includes('raja420')) {
+                enterRaja420Portal();
+            }
+        };
+    </script>
+</body>
+</html>
